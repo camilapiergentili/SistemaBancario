@@ -1,5 +1,7 @@
 package are.edu.utn.frbb.tup.sistemasBancarios.model;
 
+import are.edu.utn.frbb.tup.sistemasBancarios.controller.dto.ClienteDto;
+
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,6 +16,17 @@ public class Cliente extends Persona{
     public Cliente(){
         this.fechaAltaCliente = LocalDate.now();
         cuentasDelCliente = new HashSet<>();
+    }
+
+    public Cliente(ClienteDto clienteDto){
+        this();
+        this.setDni(clienteDto.getDni());
+        this.setNombre(clienteDto.getNombre());
+        this.setApellido(clienteDto.getApellido());
+        this.setFechaNacimiento(LocalDate.parse(clienteDto.getFechaNacimiento()));
+        this.setTipoPersona(TipoPersona.fromString(clienteDto.getTipoPersona()));
+        this.setBanco(clienteDto.getBanco());
+
     }
 
     public LocalDate getFechaAltaCliente() {
@@ -49,14 +62,14 @@ public class Cliente extends Persona{
     }
 
 
-    public boolean tieneCuenta(TipoCuenta tipocuenta, TipoMoneda tipoMoneda){
-
-        for(Cuenta  cuenta : cuentasDelCliente){
-            if(cuenta.getTipoCuenta().equals(tipocuenta) && cuenta.getTipoMoneda().equals(tipoMoneda)){
-                return true;
-            }
-        }
-
-        return false;
-    }
+//    public boolean tieneCuenta(TipoCuenta tipocuenta, TipoMoneda tipoMoneda){
+//
+//        for(Cuenta  cuenta : cuentasDelCliente){
+//            if(cuenta.getTipoCuenta().equals(tipocuenta) && cuenta.getTipoMoneda().equals(tipoMoneda)){
+//                return true;
+//            }
+//        }
+//
+//        return false;
+//    }
 }

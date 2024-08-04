@@ -33,13 +33,17 @@ public class PrestamoServiceImplementation implements PrestamoService {
 
 
     @Override
-    public PrestamoResponsePost solicitarPrestamo(PrestamoDto prestamoDto) throws ClienteNoExistsException, ClienteNoCuentaTipoMonedaException, TipoCuentaAlreadyExistsException, CantidadNegativaException, CuentaNoEncontradaException {
+    public PrestamoResponsePost solicitarPrestamo(PrestamoDto prestamoDto) throws ClienteNoExistsException, ClienteNoCuentaTipoMonedaException, CuentaNoEncontradaException {
 
         Prestamo prestamo = toPrestamo(prestamoDto);
 
         Cliente cliente = clienteService.buscarClientePorDni(prestamo.getNumeroCliente());
         Cuenta cuentaParaPrestamo = cuentaService.obtenerCuentaParaPrestamo(prestamo.getNumeroCliente(), prestamo.getMoneda());
 
+        if(cliente == null){
+            throw new ClienteNoExistsException("El cliente con dni " + prestamo.getNumeroCliente() + " no es cliente del banco");
+
+        }
 
         if(cuentaParaPrestamo == null){
             throw new ClienteNoCuentaTipoMonedaException("El cliente no tiene cuenta del tipo de moneda: " + prestamo.getMoneda());
@@ -49,10 +53,10 @@ public class PrestamoServiceImplementation implements PrestamoService {
             prestamo.setEstado(false);
 
         }else{
-            //cuentaService.modificarSaldo(cliente, cuentaParaPrestamo, prestamo.getMontoPrestamo());
+
             prestamo.setEstado(true);
             simularPlanPago(prestamo);
-            movimientosService.depositar(cliente.getDni(), cuentaParaPrestamo.getNumeroCuenta(), prestamo.getMontoPrestamo());
+            movimientosService.depositar(cuentaParaPrestamo.getNumeroCuenta(), prestamo.getMontoPrestamo());
             prestamoDao.save(prestamo);
 
         }
@@ -116,7 +120,7 @@ public class PrestamoServiceImplementation implements PrestamoService {
             throw new SaldoInsuficienteException("Saldo insuficiente para pagar la cuota.");
         }
 
-        movimientosService.retiro(prestamoDto.getNumeroCliente(), cuentaParaPrestamo.getNumeroCuenta(), prestamoPagar.getMontoCuota());
+        movimientosService.retiro(cuentaParaPrestamo.getNumeroCuenta(), prestamoPagar.getMontoCuota());
 
 
         planPagos.remove(0);
@@ -126,13 +130,13 @@ public class PrestamoServiceImplementation implements PrestamoService {
 
     }
 
-    private List<InfoPrestamo> infoPrestamo(List<Prestamo> prestamosByCliente){
+    public List<InfoPrestamo> infoPrestamo(List<Prestamo> prestamosByCliente){
         List<InfoPrestamo> listDetallePrestamo = new ArrayList<>();
 
         for(Prestamo p : prestamosByCliente){
             InfoPrestamo datosPrestamo = new InfoPrestamo();
 
-            double saldoPagarConIntereses = p.getMontoCuota()*p.getPlazoEnMeses();
+            double saldoPagarConIntereses = p.getMontoCuota() * p.getPlazoEnMeses();
             int pagosRealizados = p.getPlazoEnMeses() - p.getPlanPagos().size();
 
             datosPrestamo.setMontoTotal(p.getMontoPrestamo());
@@ -149,7 +153,7 @@ public class PrestamoServiceImplementation implements PrestamoService {
     }
 
     private double calcularSaldoAPagar(double montoTotal, double montoCuota, int pagosRealizados){
-        double saldoRestante = montoTotal - montoCuota*pagosRealizados;
+        double saldoRestante = montoTotal - montoCuota * pagosRealizados;
         if(saldoRestante <= 0){
             saldoRestante = 0;
         }

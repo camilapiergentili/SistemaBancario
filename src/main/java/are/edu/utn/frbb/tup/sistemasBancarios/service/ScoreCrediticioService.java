@@ -11,13 +11,16 @@ public class ScoreCrediticioService {
     ImplementsPrestamoDao prestamoDao;
 
     public boolean scoreCrediticio(long numeroCliente){
-        boolean darPrestamo = false;
+        return sizePrestamos(numeroCliente) && ultimoDigito(numeroCliente);
+    }
 
-        if(prestamoDao.findPrestamoByCliente(numeroCliente).size() < 2){
-            darPrestamo = true;
-        }
+    private boolean sizePrestamos(long numeroCliente){
+        return (prestamoDao.findPrestamoByCliente(numeroCliente).size() < 2);
+    }
 
-        return darPrestamo;
+    private boolean ultimoDigito(long numeroCliente){
+        String nroClienteStr = String.valueOf(numeroCliente);
+        return nroClienteStr.charAt(nroClienteStr.length() - 1) != '2';
     }
 
 

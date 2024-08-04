@@ -26,12 +26,10 @@ public class MovimientosServiceImplements implements MovimientoService {
     @Autowired
     CuentaServiceImplementation cuentaService;
 
-    @Autowired
-    ClienteServiceImplementation clienteService;
 
     @Override
     public Cuenta verificarCuenta(long numeroCuenta) throws CuentaNoEncontradaException{
-        Cuenta cuenta = cuentaDao.find(numeroCuenta, false);
+        Cuenta cuenta = cuentaDao.find(numeroCuenta, true);
         if(cuenta == null){
             throw new CuentaNoEncontradaException("La cuenta no se encontro, no se podra realizar el movimiento");
 
@@ -44,18 +42,13 @@ public class MovimientosServiceImplements implements MovimientoService {
     public void realizarMovimiento(Movimientos movimientos, Cuenta cuenta) throws CuentaNoEncontradaException {
         cuentaService.agregarMovimientosALaCuenta(movimientos, cuenta);
         movimientoDao.save(movimientos);
-        cuentaDao.save(cuenta);
+        //cuentaDao.save(cuenta);
     }
 
 
     @Override
-    public void retiro(long dniTitular, long numeroCuenta, double monto) throws CantidadNegativaException, NoAlcanzaException, CuentaNoEncontradaException, ClienteNoExistsException {
+    public void retiro(long numeroCuenta, double monto) throws NoAlcanzaException, CuentaNoEncontradaException {
         Cuenta cuenta = verificarCuenta(numeroCuenta);
-        Cliente cliente = clienteService.buscarClientePorDni(dniTitular);
-
-        if(monto < 0){
-            throw new CantidadNegativaException("La cantidad de debitar no puede ser negativa");
-        }
 
         if(monto > cuenta.getSaldo()){
             throw new NoAlcanzaException("No tienen dinero suficiente para efectuar el retiro");
@@ -65,30 +58,23 @@ public class MovimientosServiceImplements implements MovimientoService {
         retiro.setTipoTransaccion(TipoTransaccion.RETIRO);
         retiro.setMonto(monto);
         retiro.setCuenta(cuenta);
-        cuenta.setTitular(cliente);
+
         cuenta.setSaldo(cuenta.getSaldo() - monto);
         realizarMovimiento(retiro, cuenta);
 
     }
 
     @Override
-    public void depositar(long dniTitular, long numeroCuenta, double monto) throws CantidadNegativaException, CuentaNoEncontradaException, ClienteNoExistsException {
+    public void depositar(long numeroCuenta, double monto) throws CuentaNoEncontradaException {
 
         Cuenta cuenta = verificarCuenta(numeroCuenta);
-        Cliente cliente = clienteService.buscarClientePorDni(dniTitular);
-
-        if(monto < 0){
-            throw new CantidadNegativaException("La cantidad a depositar no puede ser negativa");
-        }
 
         Movimientos deposito = new Movimientos();
         deposito.setTipoTransaccion(TipoTransaccion.DEPOSITO);
         deposito.setMonto(monto);
         deposito.setCuenta(cuenta);
 
-        cuenta.setTitular(cliente);
         cuenta.setSaldo(cuenta.getSaldo() + monto);
-
         realizarMovimiento(deposito, cuenta);
 
     }
@@ -98,8 +84,8 @@ public class MovimientosServiceImplements implements MovimientoService {
         Cuenta cuentaDelOrigen = verificarCuenta(cuentaOrigen);
         Cuenta cuentaDestinatario = verificarCuenta(cuentaDestino);
 
-        retiro(cuentaDelOrigen.getTitular().getDni(),cuentaDelOrigen.getNumeroCuenta(), monto);
-        depositar(cuentaDestinatario.getTitular().getDni(), cuentaDestinatario.getNumeroCuenta(), monto);
+        retiro(cuentaDelOrigen.getNumeroCuenta(), monto);
+        depositar(cuentaDestinatario.getNumeroCuenta(), monto);
 
     }
 

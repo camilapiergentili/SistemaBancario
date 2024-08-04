@@ -7,7 +7,7 @@ import are.edu.utn.frbb.tup.sistemasBancarios.model.exception.*;
 
 public interface PrestamoService {
 
-    PrestamoResponsePost solicitarPrestamo(PrestamoDto prestamoDto) throws ClienteNoExistsException, ClienteNoCuentaTipoMonedaException, TipoCuentaAlreadyExistsException, CantidadNegativaException, CuentaNoEncontradaException;
+    PrestamoResponsePost solicitarPrestamo(PrestamoDto prestamoDto) throws ClienteNoExistsException, ClienteNoCuentaTipoMonedaException, CuentaNoEncontradaException;
     PrestamoResponseGet prestamosByCliente(long numeroCliente) throws ClienteNoExistsException, PrestamoNoExistsException;
     void pagarCouta(PrestamoDto prestamoDto) throws PrestamoNoExistsException, ClienteNoCuentaTipoMonedaException, SaldoInsuficienteException, CantidadNegativaException, NoAlcanzaException, CuentaNoEncontradaException, ClienteNoExistsException;
 }

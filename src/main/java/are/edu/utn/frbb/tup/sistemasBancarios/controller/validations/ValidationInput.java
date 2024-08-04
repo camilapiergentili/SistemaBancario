@@ -3,6 +3,7 @@ package are.edu.utn.frbb.tup.sistemasBancarios.controller.validations;
 import are.edu.utn.frbb.tup.sistemasBancarios.controller.dto.ClienteDto;
 import are.edu.utn.frbb.tup.sistemasBancarios.controller.dto.PrestamoDto;
 import are.edu.utn.frbb.tup.sistemasBancarios.controller.exceptions.NotFormatDateException;
+import are.edu.utn.frbb.tup.sistemasBancarios.model.exception.CantidadNegativaException;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -34,9 +35,9 @@ public class ValidationInput {
         try{
             Double.parseDouble(String.valueOf(prestamoDto.getMontoPrestamo()));
             if(prestamoDto.getMontoPrestamo() <= 0){
-                throw new IllegalArgumentException("El monto no puede ser negativo");
+                throw new CantidadNegativaException("El monto no puede ser negativo");
             }
-        }catch (NumberFormatException ex){
+        }catch (NumberFormatException | CantidadNegativaException ex){
             throw new IllegalArgumentException("Error, solo se deben ingresar caracteres numericos");
         }
 
@@ -87,10 +88,24 @@ public class ValidationInput {
             throw new IllegalArgumentException("El dni debe contener 7 u 8 caracteres");
         }
 
-        if(!dniStr.matches("\\d+")){
-            throw new IllegalArgumentException("El dni debe contener caracteres numericos");
+        if (!dniStr.matches("\\d{7,8}")) {
+            throw new IllegalArgumentException("El número de dni debe contener solo caracteres numéricos");
+        }
+    }
+
+    public void validarNumeroCuenta(long numeroCuenta){
+
+        String nroCuentaStr = String.valueOf(numeroCuenta);
+
+        if(nroCuentaStr.length() != 19){
+            throw new IllegalArgumentException("El número de cuenta debe contar con 19 caracteres");
 
         }
+
+        if (!nroCuentaStr.matches("\\d{19}")) {
+            throw new IllegalArgumentException("El número de cuenta debe contener solo caracteres numéricos");
+        }
+
     }
 
 }

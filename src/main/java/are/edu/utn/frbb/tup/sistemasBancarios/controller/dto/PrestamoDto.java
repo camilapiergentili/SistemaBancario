@@ -4,7 +4,7 @@ public class PrestamoDto {
 
     private long numeroCliente;
     private int plazoEnMeses;
-    private long montoPrestamo;
+    private double montoPrestamo;
     private String moneda;
 
     public long getNumeroCliente() {
@@ -23,11 +23,11 @@ public class PrestamoDto {
         this.plazoEnMeses = plazoEnMeses;
     }
 
-    public long getMontoPrestamo() {
+    public double getMontoPrestamo() {
         return montoPrestamo;
     }
 
-    public void setMontoPrestamo(long montoPrestamo) {
+    public void setMontoPrestamo(double montoPrestamo) {
         this.montoPrestamo = montoPrestamo;
     }
 

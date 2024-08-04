@@ -1,5 +1,7 @@
 package are.edu.utn.frbb.tup.sistemasBancarios.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.time.LocalDate;
 
 public class Movimientos {
@@ -8,6 +10,7 @@ public class Movimientos {
     private LocalDate fechaMovimiento;
     private TipoTransaccion tipoTransaccion;
     private double monto;
+    @JsonIgnore
     private Cuenta cuenta;
     private static int contador = 1;
 

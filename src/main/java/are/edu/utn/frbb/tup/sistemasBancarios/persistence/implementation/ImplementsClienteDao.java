@@ -51,9 +51,7 @@ public class ImplementsClienteDao extends AbstactDataBase implements ClienteDao 
     }
 
     public void deteleCliente(long dni){
-
         getInMemoryDataBase().remove(dni);
-
     }
 
 }

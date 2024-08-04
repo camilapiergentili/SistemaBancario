@@ -24,15 +24,22 @@ public class CuentaController {
     ValidationInput validationInput;
 
     @PostMapping("/agregar")
-    public ResponseEntity<Object> agregarCuenta(@RequestBody CuentaDto cuentaDto, WebRequest request) throws TipoCuentaNotSupportedException, TipoCuentaAlreadyExistsException, CuentaAlreadyExistsException, ClienteNoExistsException {
+    public ResponseEntity<Object> addCuenta(@RequestBody CuentaDto cuentaDto, WebRequest request) throws TipoCuentaNotSupportedException, TipoCuentaAlreadyExistsException, CuentaAlreadyExistsException, ClienteNoExistsException {
         validationInput.validarDni(cuentaDto.getDniTitular());
         cuentaService.darAltaCuenta(cuentaDto, cuentaDto.getDniTitular());
         return ResponseEntity.status(HttpStatus.CREATED).body("Cuenta agregada con éxito");
     }
 
-    @GetMapping("/{dniTitular}")
-    public List<Cuenta> mostrarCuentas(@PathVariable long dniTitular) throws CuentaNoEncontradaException {
+    @GetMapping("/all/{dniTitular}")
+    public List<Cuenta> allCuentasByCliente(@PathVariable long dniTitular) throws CuentaNoEncontradaException {
+        validationInput.validarDni(dniTitular);
         return cuentaService.listCuentasByCliente(dniTitular);
 
+    }
+
+    @GetMapping("/{nroCuenta}")
+    public Cuenta buscarCuentaPorNumero(@PathVariable long nroCuenta) throws CuentaNoEncontradaException {
+        validationInput.validarNumeroCuenta(nroCuenta);
+        return cuentaService.buscarCuentaPorNumero(nroCuenta);
     }
 }

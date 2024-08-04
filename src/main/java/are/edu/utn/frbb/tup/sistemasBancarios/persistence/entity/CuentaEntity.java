@@ -1,7 +1,6 @@
 package are.edu.utn.frbb.tup.sistemasBancarios.persistence.entity;
 
 import are.edu.utn.frbb.tup.sistemasBancarios.model.*;
-import are.edu.utn.frbb.tup.sistemasBancarios.model.exception.ClienteNoExistsException;
 
 
 import java.time.LocalDate;
@@ -14,7 +13,7 @@ public class CuentaEntity extends BaseEntity{
     
     private final double saldo;
     private final LocalDate fechaAltaCuenta;
-    private final long dniTitutar;
+    private final Cliente dniTitutar;
     private final String tipoMoneda;
     private final String tipoCuenta;
 
@@ -24,7 +23,7 @@ public class CuentaEntity extends BaseEntity{
         super(cuenta.getNumeroCuenta());
         this.saldo = cuenta.getSaldo();
         this.fechaAltaCuenta = cuenta.getFechaAltaCuenta();
-        this.dniTitutar = cuenta.getTitular().getDni();
+        this.dniTitutar = cuenta.getTitular();
         this.tipoMoneda = cuenta.getTipoMoneda().toString();
         this.tipoCuenta = cuenta.getTipoCuenta().toString();
 
@@ -39,6 +38,7 @@ public class CuentaEntity extends BaseEntity{
     public Cuenta toCuenta(){
         Cuenta cuenta = new Cuenta();
         cuenta.setNumeroCuenta(super.getId());
+        cuenta.setTitular(this.dniTitutar);
         cuenta.setSaldo(this.saldo);
         cuenta.setFechaAltaCuenta(this.fechaAltaCuenta);
         cuenta.setTipoMoneda(TipoMoneda.valueOf(this.tipoMoneda));
@@ -55,7 +55,7 @@ public class CuentaEntity extends BaseEntity{
         return fechaAltaCuenta;
     }
 
-    public long getDniTitutar() {
+    public Cliente getDniTitutar() {
         return dniTitutar;
     }
 
@@ -65,5 +65,9 @@ public class CuentaEntity extends BaseEntity{
 
     public String getTipoCuenta() {
         return tipoCuenta;
+    }
+
+    public List<Long> getListaMovimientos() {
+        return listaMovimientos;
     }
 }

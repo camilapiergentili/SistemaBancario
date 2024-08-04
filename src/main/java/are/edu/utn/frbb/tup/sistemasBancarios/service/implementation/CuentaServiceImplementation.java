@@ -54,24 +54,45 @@ public class CuentaServiceImplementation implements CuentaService {
 
     }
 
+    public void actualizarTitularCuenta(Cliente clienteActualizado, long dniAntiguo) throws CuentaNoEncontradaException {
+        List<Cuenta> cuentasByCliente = listCuentasByCliente(dniAntiguo);
+        for (Cuenta c : cuentasByCliente){
+            c.setTitular(clienteActualizado);
+            cuentaDao.save(c);
+        }
 
-    private boolean cuentaSoportada(Cuenta cuenta){
-        switch (cuenta.getTipoCuenta()) {
-            case CUENTA_CORRIENTE:
-                return cuenta.getTipoMoneda() == TipoMoneda.ARS;
-
-                case CAJA_AHORRO:
-                    return cuenta.getTipoMoneda() == TipoMoneda.ARS || cuenta.getTipoMoneda() == TipoMoneda.USD;
-                default:
-                    return false;
-            }
     }
 
-    public boolean tieneCuentaDeTipoMoneda(long numeroCliente, TipoMoneda moneda){
+    //me falta hacer el test
+    public void agregarMovimientosALaCuenta(Movimientos movimientos, Cuenta cuenta) throws CuentaNoEncontradaException {
+        movimientos.setCuenta(cuenta);
+        cuenta.addMovimientos(movimientos);
+        cuentaDao.save(cuenta);
+    }
+
+    public Cuenta buscarCuentaPorNumero(long numeroCuenta) throws CuentaNoEncontradaException {
+        Cuenta cuenta = cuentaDao.find(numeroCuenta, true);
+        if(cuenta == null){
+            throw new CuentaNoEncontradaException("No existe cuenta con número " + numeroCuenta);
+        }
+
+        return cuenta;
+    }
+
+
+    public boolean cuentaSoportada(Cuenta cuenta){
+        return switch (cuenta.getTipoCuenta()) {
+            case CUENTA_CORRIENTE -> cuenta.getTipoMoneda() == TipoMoneda.ARS;
+            case CAJA_AHORRO -> cuenta.getTipoMoneda() == TipoMoneda.ARS || cuenta.getTipoMoneda() == TipoMoneda.USD;
+            default -> false;
+        };
+    }
+
+    public boolean tieneCuentaDeTipoMoneda(long numeroCliente, TipoMoneda moneda, TipoCuenta tipoCuenta){
         List<Cuenta> cuentasDelCliente = cuentaDao.cuentasDelCliente(numeroCliente);
 
         for (Cuenta c : cuentasDelCliente){
-           if(c.getTipoMoneda().equals(moneda)){
+           if(c.getTipoMoneda().equals(moneda) && c.getTipoCuenta().equals(tipoCuenta)){
                return true;
            }
         }
@@ -107,31 +128,7 @@ public class CuentaServiceImplementation implements CuentaService {
     }
 
 
-    public void actualizarTitularCuenta(Cliente clienteActualizado, long dniAntiguo) throws CuentaNoEncontradaException {
 
-        List<Cuenta> cuentasByCliente = listCuentasByCliente(dniAntiguo);
-
-        for (Cuenta c : cuentasByCliente){
-            c.setTitular(clienteActualizado);
-            cuentaDao.update(c);
-        }
-
-    }
-
-
-    public void agregarMovimientosALaCuenta(Movimientos movimientos, Cuenta cuenta) throws CuentaNoEncontradaException {
-        movimientos.setCuenta(cuenta);
-        cuenta.addMovimientos(movimientos);
-    }
-
-    public Cuenta buscarCuentaPorNumero(long numeroCuenta) throws CuentaNoEncontradaException {
-        Cuenta cuenta = cuentaDao.find(numeroCuenta, true);
-        if(cuenta == null){
-            throw new CuentaNoEncontradaException("No existe cuenta con número " + numeroCuenta);
-        }
-
-        return cuenta;
-    }
 
     private Cuenta toCuenta(CuentaDto cuentaDto){
         Cuenta cuenta = new Cuenta();

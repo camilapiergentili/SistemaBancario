@@ -54,7 +54,7 @@ public class ImplementsCuentaDao extends AbstactDataBase implements CuentaDao {
 
             CuentaEntity cuentaEntity = (CuentaEntity) object;
 
-            if(cuentaEntity.getDniTitutar() == dni){
+            if(cuentaEntity.getDniTitutar().getDni() == dni){
                 cuentasCliente.add(cuentaEntity.toCuenta());
             }
         }
