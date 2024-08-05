@@ -34,6 +34,7 @@ public class ClienteController {
 
     @GetMapping("/{Id}")
     public Cliente buscarClientePorDni(@PathVariable long Id, WebRequest request) throws ClienteNoExistsException, UnderageException {
+        validationInput.validarDni(Id);
         return clienteService.buscarClientePorDni(Id);
     }
 

@@ -1,4 +1,4 @@
-package are.edu.utn.frbb.tup.sistemasBancarios;
+package are.edu.utn.frbb.tup.sistemasBancarios.serviceTest;
 
 
 import are.edu.utn.frbb.tup.sistemasBancarios.controller.dto.CuentaDto;

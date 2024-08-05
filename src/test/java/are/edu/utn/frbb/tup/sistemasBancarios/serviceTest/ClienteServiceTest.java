@@ -1,4 +1,4 @@
-package are.edu.utn.frbb.tup.sistemasBancarios;
+package are.edu.utn.frbb.tup.sistemasBancarios.serviceTest;
 
 import are.edu.utn.frbb.tup.sistemasBancarios.controller.dto.ClienteDto;
 import are.edu.utn.frbb.tup.sistemasBancarios.model.*;
@@ -16,10 +16,6 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
